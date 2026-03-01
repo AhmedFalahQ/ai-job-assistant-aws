@@ -30,8 +30,8 @@ class BedrockClient:
             return "claude"
         elif "amazon.nova" in model_id or "amazon.titan" in model_id:
             return "amazon"
-        elif "meta.llma" in model_id:
-            return "llma"
+        elif "meta.llama" in model_id:
+            return "llama"
         else:
             raise ValueError(f"Unsupported model family: {model_id}")
     
@@ -97,13 +97,22 @@ class BedrockClient:
         elif self.model_family=="amazon":
             # Amazon format
             return {
-                "inputText":prompt,
-                "textGenerationConfig":{
-                    "maxTokenCount":max_tokens,
-                    "temperature":temperature,
-                    "topP":0.9
-                }
+        "messages": [
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "text": prompt
+                    }
+                ]
             }
+        ],
+        "inferenceConfig": {
+            "maxTokens": max_tokens,
+            "temperature": temperature,
+            "topP": 0.9
+        }
+        }
         elif self.model_family=="llama":
             return{
                 "prompt": prompt,
@@ -168,9 +177,9 @@ class BedrockClient:
 
         return input_cost+output_cost
     
-    def create_client(model_id:str,region:str="us-east-1") -> BedrockClient:
-        # Create Bedrock client with configs
-        return BedrockClient(model_id,region)
+def create_client(model_id:str,region:str="us-east-1") -> BedrockClient:
+    # Create Bedrock client with configs
+    return BedrockClient(model_id,region)
 
 
     
