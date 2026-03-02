@@ -1,3 +1,9 @@
+"""
+Bedrock Client - Abstraction layer for AWS Bedrock API
+Handles different model formats and provides unified interface
+Updated for Nova 2, Claude Haiku 4.5, and Llama API schemas
+"""
+
 import json
 import boto3
 import logging
@@ -7,9 +13,11 @@ logger=logging.getLogger()
 
 class BedrockClient:
     """
-    unified client for aws bedrock models
+    Unified client for AWS Bedrock models
+    Abstraction for model-specific req/res formats
     """
     def __init__(self,model_id:str,region:str="us-east-1"):
+
         self.model_id=model_id
         self.region=region
         self.client=boto3.client(
@@ -17,14 +25,14 @@ class BedrockClient:
             region_name=region
         )
 
-        # model family for request format
+        # Model family for request formatting
         self.model_family= self._get_model_family(model_id)
         logger.info(f"Initialized Bedrock client with model: { model_id}")
 
 
     def _get_model_family(self,model_id:str) -> str:
         """
-        determine model family from model ID
+        Determine model family from model ID
         """
         if "anthropic.claude" in model_id:
             return "claude"
@@ -51,6 +59,7 @@ class BedrockClient:
         system_prompt: optional for Claude models
         """
         try:
+            # Build request body based on model family
             request_body=self._build_request_body(
                 prompt,max_tokens,temperature,system_prompt
             )
@@ -61,15 +70,17 @@ class BedrockClient:
                 modelId=self.model_id,
                 body=json.dumps(request_body)
             )
-
+            # Parse response based on model family
             result=self._parse_response(response)
             
             logger.info(f"Received response: {result['usage']['output_tokens']} tokens")
 
             return result
+        
         except Exception as e:
             logger.error(f"Bedrock invocation failed: {str(e)}")
             raise
+        
     def _build_request_body(
             self,
             prompt:str,
@@ -78,43 +89,61 @@ class BedrockClient:
             system_prompt: Optional[str]
     )-> Dict[str,Any]:
         """Build model specific request body"""
+
         if self.model_family=="claude":
-            # Then use Claude format API
-            body={
-                "anthropic_version":"bedrock-2023-05-31",
+            # Claude format API - Updated for Haiku 4.5
+            body = {
+                "anthropic_version": "bedrock-2023-05-31",
                 "max_tokens": max_tokens,
                 "temperature": temperature,
-                "messages":[
+                "messages": [
                     {
-                        "role":"user",
-                        "content":prompt
+                        "role": "user",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": prompt
+                            }
+                        ]
                     }
                 ]
             }
             if system_prompt:
                 body["system"]= system_prompt
-                return body
+            return body
+        
         elif self.model_family=="amazon":
-            # Amazon format
-            return {
-        "messages": [
-            {
-                "role": "user",
-                "content": [
+            # Amazon Nova 2 format - Updated
+            body = {
+                "messages": [
                     {
-                        "text": prompt
+                        "role": "user",
+                        "content": [
+                            {
+                                "text": prompt
+                            }
+                        ]
+                    }
+                ],
+                "inferenceConfig": {
+                    "maxTokens": max_tokens,
+                    "temperature": temperature,
+                    "topP": 0.9
+                }
+            }
+            
+            # Add system prompt if provided
+            if system_prompt:
+                body["system"] = [
+                    {
+                        "text": system_prompt
                     }
                 ]
-            }
-        ],
-        "inferenceConfig": {
-            "maxTokens": max_tokens,
-            "temperature": temperature,
-            "topP": 0.9
-        }
-        }
+            
+            return body
+        
         elif self.model_family=="llama":
-            return{
+            return {
                 "prompt": prompt,
                 "max_gen_len":max_tokens,
                 "temperature":temperature,
@@ -125,27 +154,46 @@ class BedrockClient:
     
     def _parse_response(self,response:Dict[str,Any])-> Dict[str,Any]:
         """ For parse model-specific response format"""
+        # Read the response
         response_body=json.loads(response['body'].read())
 
         if self.model_family=="claude":
-            # Claude response format
-            return{
-                "content": response_body['content'][0]['text'],
-                "usage":{
+            # Claude response format - Updated for new schema as of Mar 2026
+            content_text = ""
+            for content_block in response_body['content']:
+                if content_block.get('type') == 'text':
+                    content_text = content_block['text']
+                    break
+            
+            return {
+                "content": content_text,
+                "usage": {
                     "input_tokens": response_body['usage']['input_tokens'],
                     "output_tokens": response_body['usage']['output_tokens']
                 },
-                "stop_reason":response_body.get('stop_reason')
+                "stop_reason": response_body.get('stop_reason')
             }
+        
         elif self.model_family=="amazon":
-            # Amazon Titan or Nove response format
-            return{
-                "content":response_body['results'][0]['outputText'],
+            # Amazon Nova response format - new schema as of Mar 2026
+            content_text = ""
+            
+            # Extract text from content array
+            if 'output' in response_body and 'message' in response_body['output']:
+                for content_block in response_body['output']['message']['content']:
+                    if 'text' in content_block:
+                        content_text = content_block['text']
+                        break
+            
+            return {
+                "content": content_text,
                 "usage": {
-                    "input_tokens": response_body.get('inputTextTokenCount',0),
-                    "output_tokens": response_body['results'][0].get('tokenCount',0)
-                }
+                    "input_tokens": response_body['usage']['inputTokens'],
+                    "output_tokens": response_body['usage']['outputTokens']
+                },
+                "stop_reason": response_body.get('stopReason')
             }
+        
         elif self.model_family=="llama":
             # Llama response format
             return{
@@ -166,9 +214,14 @@ class BedrockClient:
         """
         cost_per_1k={
             "amazon.nova-2-lite-v1:0":{"input":0.0003,"output":0.0025},
-            "anthropic.claude-haiku-4-5-20251001-v1:0":{"input":0.001,"output":0.005}
+            "anthropic.claude-haiku-4-5-20251001-v1:0":{"input":0.001,"output":0.005},
+            # Llama models - Added
+            "meta.llama3-1-70b-instruct-v1:0": {"input": 0.00099, "output": 0.00099},
+            "meta.llama3-1-8b-instruct-v1:0": {"input": 0.0003, "output": 0.0006}
         }
+        
         if self.model_id not in cost_per_1k:
+            logger.warning(f"Cost data not available for {self.model_id}")
             return 0.0
         
         rates=cost_per_1k[self.model_id]
