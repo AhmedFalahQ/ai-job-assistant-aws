@@ -5,7 +5,7 @@ provides prompt logic and clear contracts
 import json
 from typing import Dict,Any
 
-class PropmtTemplates:
+class PromptTemplates:
     # Centralized templates for all agents 
 
     @staticmethod
@@ -203,10 +203,10 @@ Focus on required skills: {", ".join(job_analysis.get("required_skills", [])[:5]
     def get_prompt_template(agent_type:str)-> callable:
         # Factory function to get prompt by agent type
         templates={
-            'job_analyzer':PropmtTemplates.job_analyzer,
-            'resume_tailor':PropmtTemplates.resume_tailor,
-            'cover_letter':PropmtTemplates.cover_letter,
-            'interview_prep':PropmtTemplates.interview_prep
+            'job_analyzer':PromptTemplates.job_analyzer,
+            'resume_tailor':PromptTemplates.resume_tailor,
+            'cover_letter':PromptTemplates.cover_letter,
+            'interview_prep':PromptTemplates.interview_prep
         }
         if agent_type not in templates:
             raise ValueError(f"Unknown agent type: {agent_type}")
