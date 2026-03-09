@@ -213,8 +213,8 @@ class BedrockClient:
         prices are taken from AWS docs in date of 14th Feb 2026 :)
         """
         cost_per_1k={
-            "amazon.nova-2-lite-v1:0":{"input":0.0003,"output":0.0025},
-            "anthropic.claude-haiku-4-5-20251001-v1:0":{"input":0.001,"output":0.005},
+            "us.amazon.nova-2-lite-v1:0":{"input":0.0003,"output":0.0025},
+            "global.anthropic.claude-haiku-4-5-20251001-v1:0":{"input":0.001,"output":0.005},
             # Llama models - Added
             "meta.llama3-1-70b-instruct-v1:0": {"input": 0.00099, "output": 0.00099},
             "meta.llama3-1-8b-instruct-v1:0": {"input": 0.0003, "output": 0.0006}
