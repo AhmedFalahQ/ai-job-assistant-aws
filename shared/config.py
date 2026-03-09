@@ -37,11 +37,11 @@ LOG_LEVEL=os.environ.get("LOG_LEVEL","INFO")
 
 # cost tracking -pricing is shown in AWS Bedrock pricing website-
 COST_PER_1K_TOKENS={
-    "amazon.nova-2-lite-v1:0":{
+    "us.amazon.nova-2-lite-v1:0":{
         "input":0.0003, # 0.3 per million
         "output":0.0025 # 2.5 per million
     },
-    "anthropic.claude-haiku-4-5-20251001-v1:0":{
+    "global.anthropic.claude-haiku-4-5-20251001-v1:0":{
         "input":0.001, # 1 per 1M
         "output":0.005 # 5 per 1M
     },
