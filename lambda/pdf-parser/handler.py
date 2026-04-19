@@ -130,8 +130,8 @@ def parse_with_pdfplumber(pdf_content:bytes)->tuple[str,int]:
 
 def clean_text(text:str)->str:
     # Remove excessive whitespaces
-    lines=[lines.strip() for line in text.split('\n') ]
-    lines=[lines for line in lines if line] # That will remove empty lines
+    lines=[line.strip() for line in text.split('\n') ]
+    lines=[line for line in lines if line] # That will remove empty lines
 
     cleaned='\n'.join(lines)
 
@@ -139,13 +139,3 @@ def clean_text(text:str)->str:
     cleaned=cleaned.encode('ascii','ignore').decode('ascii')
 
     return cleaned
-
-# For local test
-if __name__ =="__main__":
-    test_event={
-        "s3_bucket":"test-bucket",
-        "s3_key":"resumes/test.pdf"
-    }
-
-    result=lambda_handler(test_event,None)
-    print(json.dumps(result,indent=2))
