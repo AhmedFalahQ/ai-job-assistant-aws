@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Adeed — AI Job Application Assistant</title>
+  <link rel="icon" type="image/png" href="head_logo.png">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:       #0f2244;
+      --blue:       #1a56db;
+      --blue-light: #3b82f6;
+      --blue-pale:  #eff6ff;
+      --blue-mid:   #dbeafe;
+      --slate:      #475569;
+      --slate-light:#94a3b8;
+      --white:      #ffffff;
+      --off-white:  #f8fafc;
+      --border:     #e2e8f0;
+      --success:    #059669;
+      --error:      #dc2626;
+      --shadow-sm:  0 1px 3px rgba(15,34,68,.08), 0 1px 2px rgba(15,34,68,.06);
+      --radius:     12px;
+      --radius-sm:  8px;
+      --transition: .22s cubic-bezier(.4,0,.2,1);
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--off-white);
+      color: var(--navy);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px; position: sticky; top: 0; z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .logo { display: flex; align-items: center; gap: .75rem; }
+
+    .logo-mark {
+       height: 45px; width: auto;
+       display: flex;
+      opacity: .88; flex-shrink: 0;
+      transition: opacity var(--transition);
+    }
+
+    .logo-text { display: flex; flex-direction: column; line-height: 1.1; }
+    .logo-text span:first-child { font-family:'Playfair Display',serif; font-size:1.25rem; font-weight:700; color:var(--navy); }
+    .logo-text span:last-child  { font-size:.7rem; font-weight:500; color:var(--slate-light); letter-spacing:.08em; text-transform:uppercase; }
+
+    .logo-divider {
+      width: 1px; height: 28px;
+      background: var(--border);
+      margin: 0 .25rem; flex-shrink: 0;
+    }
+
+    .tyai-logo {
+      height: 38px; width: 110px;
+      opacity: .88; flex-shrink: 0;
+      transition: opacity var(--transition);
+    }
+
+    .linkedin-logo {
+      width:38px; height:38px; border-radius:0px;
+      background:var(--blue-pale); color:var(--blue);
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.1rem; flex-shrink:0;
+    }
+
+    .tyai-logo:hover { opacity: 1; }
+
+    .header-badge {
+      display: flex; align-items: center; gap: .4rem;
+      background: var(--blue-pale); border: 1px solid var(--blue-mid);
+      color: var(--blue); font-size: .75rem; font-weight: 600;
+      padding: .3rem .75rem; border-radius: 100px;
+    }
+    .header-badge::before {
+      content:''; width:6px; height:6px;
+      background:var(--blue-light); border-radius:50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.3)} }
+
+    /* ── Hero ── */
+    .hero {
+      background: linear-gradient(160deg, var(--navy) 0%, #1e3a6e 60%, #1a56db 100%);
+      color: white; padding: 4rem 2rem 5rem;
+      text-align: center; position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content:''; position:absolute; inset:0;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(59,130,246,.25) 0%, transparent 70%);
+    }
+    .hero-content { position:relative; z-index:1; max-width:640px; margin:0 auto; }
+    .hero h1 {
+      font-family:'Playfair Display',serif;
+      font-size:clamp(2rem,5vw,3rem); font-weight:700;
+      line-height:1.15; margin-bottom:1rem; letter-spacing:-.5px;
+    }
+    .hero h1 em {
+      font-style:normal;
+      background:linear-gradient(90deg,#93c5fd,#60a5fa);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    }
+    .hero p { font-size:1.05rem; color:rgba(255,255,255,.75); font-weight:300; }
+
+    /* ── Steps bar ── */
+    .steps-bar {
+      display:flex; justify-content:center;
+      background:var(--white); border-bottom:1px solid var(--border);
+      padding:0 2rem; overflow-x:auto;
+    }
+    .step-item {
+      display:flex; align-items:center; gap:.5rem;
+      padding:1rem 1.5rem; font-size:.82rem; font-weight:500;
+      color:var(--slate-light); white-space:nowrap;
+      border-bottom:2px solid transparent; transition:var(--transition);
+    }
+    .step-item.active { color:var(--blue); border-bottom-color:var(--blue); }
+    .step-item.done   { color:var(--success); }
+    .step-num {
+      width:20px; height:20px; border-radius:50%;
+      background:var(--border); color:var(--slate);
+      font-size:.7rem; font-weight:700;
+      display:flex; align-items:center; justify-content:center;
+      flex-shrink:0; transition:var(--transition);
+    }
+    .step-item.active .step-num { background:var(--blue); color:white; }
+    .step-item.done   .step-num { background:var(--success); color:white; }
+
+    /* ── Main ── */
+    main { max-width:860px; margin:0 auto; padding:2.5rem 1.5rem 4rem; }
+
+    /* ── Card ── */
+    .card {
+      background:var(--white); border:1px solid var(--border);
+      border-radius:var(--radius); padding:2rem;
+      margin-bottom:1.5rem; box-shadow:var(--shadow-sm);
+      animation:fadeUp .35s ease both;
+    }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+    .card-header {
+      display:flex; align-items:center; gap:.75rem;
+      margin-bottom:1.5rem; padding-bottom:1rem; border-bottom:1px solid var(--border);
+    }
+    .card-icon {
+      width:38px; height:38px; border-radius:10px;
+      background:var(--blue-pale); color:var(--blue);
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.1rem; flex-shrink:0;
+    }
+    .card-title { font-family:'Playfair Display',serif; font-size:1.15rem; font-weight:600; color:var(--navy); }
+    .card-subtitle { font-size:.8rem; color:var(--slate-light); margin-top:.15rem; }
+
+    /* ── Form ── */
+    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+    .field { display:flex; flex-direction:column; gap:.4rem; }
+    label { font-size:.82rem; font-weight:600; color:var(--navy); letter-spacing:.02em; }
+    label .req { color:var(--blue); margin-left:.1rem; }
+
+    input[type=text], textarea {
+      width:100%; border:1.5px solid var(--border);
+      border-radius:var(--radius-sm); padding:.65rem .9rem;
+      font-family:'DM Sans',sans-serif; font-size:.9rem; color:var(--navy);
+      background:var(--white); outline:none;
+      transition:border-color var(--transition), box-shadow var(--transition);
+    }
+    input[type=text]:focus, textarea:focus {
+      border-color:var(--blue-light); box-shadow:0 0 0 3px rgba(59,130,246,.12);
+    }
+    textarea { resize:vertical; min-height:120px; line-height:1.6; }
+
+    /* ── Resume toggle ── */
+    .resume-toggle {
+      display:flex; gap:.5rem; margin-bottom:1rem;
+      background:var(--off-white); border:1px solid var(--border);
+      border-radius:var(--radius-sm); padding:.3rem;
+    }
+    .toggle-btn {
+      flex:1; padding:.55rem 1rem; border:none; border-radius:6px;
+      font-family:'DM Sans',sans-serif; font-size:.85rem; font-weight:500;
+      cursor:pointer; background:transparent; color:var(--slate);
+      transition:var(--transition);
+      display:flex; align-items:center; justify-content:center; gap:.4rem;
+    }
+    .toggle-btn.active { background:var(--white); color:var(--blue); box-shadow:var(--shadow-sm); font-weight:600; }
+
+    /* ── Drop zone ── */
+    .drop-zone {
+      border:2px dashed var(--border); border-radius:var(--radius);
+      padding:2.5rem 1.5rem; text-align:center; cursor:pointer;
+      transition:var(--transition); position:relative; background:var(--off-white);
+    }
+    .drop-zone:hover, .drop-zone.drag-over { border-color:var(--blue-light); background:var(--blue-pale); }
+    .drop-zone input[type=file] { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
+    .drop-icon { font-size:2.5rem; margin-bottom:.75rem; display:block; }
+    .drop-zone p   { font-size:.9rem; color:var(--slate); margin-bottom:.4rem; }
+    .drop-zone span { font-size:.78rem; color:var(--slate-light); }
+
+    .file-chosen {
+      display:flex; align-items:center; gap:.75rem;
+      background:var(--blue-pale); border:1.5px solid var(--blue-mid);
+      border-radius:var(--radius-sm); padding:.75rem 1rem; margin-top:.75rem;
+    }
+    .file-chosen .file-icon { font-size:1.4rem; }
+    .file-chosen .file-name { font-size:.85rem; font-weight:600; color:var(--blue); flex:1; }
+    .file-chosen .file-size { font-size:.75rem; color:var(--slate-light); }
+    .remove-file { background:none; border:none; cursor:pointer; color:var(--slate-light); font-size:1rem; padding:.2rem; transition:color var(--transition); }
+    .remove-file:hover { color:var(--error); }
+
+    /* ── Submit ── */
+    .btn-primary {
+      width:100%; padding:.9rem 2rem;
+      background:linear-gradient(135deg,var(--blue),#1d4ed8);
+      color:white; border:none; border-radius:var(--radius-sm);
+      font-family:'DM Sans',sans-serif; font-size:1rem; font-weight:600;
+      cursor:pointer; transition:var(--transition);
+      display:flex; align-items:center; justify-content:center; gap:.6rem;
+      box-shadow:0 4px 14px rgba(26,86,219,.35);
+    }
+    .btn-primary:hover:not(:disabled) { transform:translateY(-1px); box-shadow:0 6px 20px rgba(26,86,219,.45); }
+    .btn-primary:disabled { opacity:.6; cursor:not-allowed; transform:none; }
+
+    /* ── Loading ── */
+    #loading-section { display:none; text-align:center; padding:3rem 2rem; }
+    .spinner-ring {
+      width:60px; height:60px;
+      border:3px solid var(--blue-mid); border-top-color:var(--blue);
+      border-radius:50%; animation:spin 1s linear infinite;
+      margin:0 auto 1.5rem;
+    }
+    @keyframes spin { to{transform:rotate(360deg)} }
+
+    .loading-steps { display:flex; flex-direction:column; gap:.6rem; max-width:320px; margin:1.5rem auto 0; }
+    .loading-step {
+      display:flex; align-items:center; gap:.75rem;
+      padding:.6rem 1rem; border-radius:var(--radius-sm);
+      background:var(--off-white); border:1px solid var(--border);
+      font-size:.85rem; color:var(--slate-light); transition:var(--transition);
+    }
+    .loading-step.active { background:var(--blue-pale); border-color:var(--blue-mid); color:var(--blue); font-weight:500; }
+    .loading-step.done   { background:#f0fdf4; border-color:#bbf7d0; color:var(--success); }
+    .step-dot { width:8px; height:8px; border-radius:50%; background:currentColor; flex-shrink:0; }
+    .loading-step.active .step-dot { animation:pulse 1s infinite; }
+
+    /* ── Results ── */
+    #results-section { display:none; }
+    .results-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem; }
+    .results-title { font-family:'Playfair Display',serif; font-size:1.5rem; font-weight:700; color:var(--navy); }
+    .results-meta  { font-size:.8rem; color:var(--slate-light); margin-top:.2rem; }
+    .results-meta strong { color:var(--navy); }
+
+    .btn-secondary {
+      padding:.55rem 1.25rem; background:var(--white);
+      border:1.5px solid var(--border); border-radius:var(--radius-sm);
+      font-family:'DM Sans',sans-serif; font-size:.85rem; font-weight:600;
+      color:var(--navy); cursor:pointer; transition:var(--transition);
+      display:flex; align-items:center; gap:.4rem;
+    }
+    .btn-secondary:hover { border-color:var(--blue-light); color:var(--blue); }
+    
+    .btn-example {
+      padding: .45rem 1rem;
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-family: 'DM Sans', sans-serif;
+      font-size: .8rem; font-weight: 600;
+      color: var(--slate); cursor: pointer;
+      transition: var(--transition);
+      white-space: nowrap; flex-shrink: 0;
+    }
+
+    .btn-example:hover {
+      border-color: var(--blue-light);
+      color: var(--blue);
+      background: var(--blue-pale);
+    }
+
+    /* ── Tabs ── */
+    .result-tabs { display:flex; gap:.5rem; margin-bottom:1.25rem; flex-wrap:wrap; }
+    .result-tab {
+      padding:.55rem 1.1rem; border:1.5px solid var(--border); border-radius:100px;
+      font-size:.83rem; font-weight:500; color:var(--slate);
+      cursor:pointer; background:var(--white); transition:var(--transition);
+      display:flex; align-items:center; gap:.4rem;
+    }
+    .result-tab:hover { border-color:var(--blue-light); color:var(--blue); }
+    .result-tab.active { background:var(--blue); border-color:var(--blue); color:white; box-shadow:0 2px 8px rgba(26,86,219,.3); }
+
+    .tab-panel { display:none; animation:fadeUp .25s ease; }
+    .tab-panel.active { display:block; }
+
+    /* ── Result boxes ── */
+    .result-box { background:var(--off-white); border:1px solid var(--border); border-radius:var(--radius); padding:1.5rem; position:relative; }
+    .result-box pre { white-space:pre-wrap; word-wrap:break-word; font-family:'DM Sans',sans-serif; font-size:.88rem; line-height:1.7; color:var(--navy); }
+
+    .copy-btn {
+      position:absolute; top:1rem; right:1rem;
+      padding:.35rem .75rem; background:var(--white);
+      border:1px solid var(--border); border-radius:6px;
+      font-size:.75rem; font-weight:600; color:var(--slate);
+      cursor:pointer; transition:var(--transition);
+      display:flex; align-items:center; gap:.3rem;
+    }
+    .copy-btn:hover { border-color:var(--blue-light); color:var(--blue); }
+    .copy-btn.copied { color:var(--success); border-color:#bbf7d0; background:#f0fdf4; }
+
+    /* ── Analysis ── */
+    .analysis-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1rem; }
+    .analysis-card { background:var(--white); border:1px solid var(--border); border-radius:var(--radius-sm); padding:1rem 1.25rem; }
+    .analysis-card h4 { font-size:.78rem; font-weight:700; color:var(--slate-light); text-transform:uppercase; letter-spacing:.08em; margin-bottom:.6rem; }
+    .tag-list { display:flex; flex-wrap:wrap; gap:.4rem; }
+    .tag { display:inline-block; padding:.2rem .6rem; border-radius:100px; font-size:.75rem; font-weight:500; }
+    .tag-blue  { background:var(--blue-pale); color:var(--blue); }
+    .tag-green { background:#f0fdf4; color:var(--success); }
+    .tag-slate { background:var(--off-white); color:var(--slate); border:1px solid var(--border); }
+    .role-badge { display:inline-block; padding:.3rem .9rem; background:linear-gradient(135deg,var(--blue),#1d4ed8); color:white; border-radius:100px; font-size:.82rem; font-weight:600; letter-spacing:.04em; text-transform:capitalize; }
+
+    /* ── Interview ── */
+    .question-card { background:var(--white); border:1px solid var(--border); border-radius:var(--radius); margin-bottom:1rem; overflow:hidden; }
+    .question-header { padding:1rem 1.25rem; cursor:pointer; display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; transition:background var(--transition); }
+    .question-header:hover { background:var(--off-white); }
+    .question-text { font-size:.9rem; font-weight:600; color:var(--navy); line-height:1.4; flex:1; }
+    .q-type-badge { font-size:.7rem; font-weight:700; padding:.2rem .6rem; border-radius:100px; text-transform:uppercase; letter-spacing:.06em; white-space:nowrap; flex-shrink:0; }
+    .q-behavioral  { background:#fef3c7; color:#92400e; }
+    .q-technical   { background:var(--blue-pale); color:var(--blue); }
+    .q-situational { background:#f0fdf4; color:var(--success); }
+    .q-culture_fit { background:#fdf4ff; color:#7c3aed; }
+    .question-body { display:none; padding:0 1.25rem 1.25rem; border-top:1px solid var(--border); }
+    .question-body.open { display:block; animation:fadeUp .2s ease; }
+    .star-grid { display:grid; grid-template-columns:1fr 1fr; gap:.75rem; margin-top:.75rem; }
+    .star-item { background:var(--off-white); border-radius:var(--radius-sm); padding:.75rem; }
+    .star-label { font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--blue); margin-bottom:.35rem; }
+    .star-content { font-size:.83rem; color:var(--slate); line-height:1.5; }
+    .chevron { transition:transform var(--transition); color:var(--slate-light); font-size:.85rem; flex-shrink:0; margin-top:.1rem; }
+    .question-header.open .chevron { transform:rotate(180deg); }
+
+    /* ── Resume bullets ── */
+    .exp-block { background:var(--white); border:1px solid var(--border); border-radius:var(--radius); padding:1.25rem; margin-bottom:1rem; }
+    .exp-block h4 { font-family:'Playfair Display',serif; font-size:1rem; font-weight:600; color:var(--navy); }
+    .exp-block .exp-meta { font-size:.8rem; color:var(--slate-light); margin:.2rem 0 .75rem; }
+    .exp-block ul { padding-left:1.25rem; }
+    .exp-block ul li { font-size:.87rem; color:var(--slate); line-height:1.6; margin-bottom:.35rem; }
+
+    .relevance-bar { display:flex; align-items:center; gap:.75rem; margin-bottom:1.25rem; background:var(--white); border:1px solid var(--border); border-radius:var(--radius-sm); padding:.9rem 1.25rem; }
+    .relevance-label { font-size:.85rem; font-weight:600; color:var(--navy); white-space:nowrap; }
+    .relevance-track { flex:1; height:6px; background:var(--border); border-radius:99px; overflow:hidden; }
+    .relevance-fill  { height:100%; background:linear-gradient(90deg,var(--blue),var(--blue-light)); border-radius:99px; transition:width 1s ease; }
+    .relevance-score { font-size:.85rem; font-weight:700; color:var(--blue); white-space:nowrap; }
+
+    /* ── Success banner ── */
+    .success-banner { background:linear-gradient(135deg,#f0fdf4,#dcfce7); border:1.5px solid #bbf7d0; border-radius:var(--radius); padding:2rem; text-align:center; }
+    .success-icon { font-size:3rem; margin-bottom:1rem; display:block; }
+    .success-banner h3 { font-family:'Playfair Display',serif; font-size:1.3rem; color:#065f46; margin-bottom:.5rem; }
+    .success-banner p  { font-size:.9rem; color:#047857; line-height:1.6; }
+    .success-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-top:1.5rem; }
+    .stat-box { background:white; border-radius:var(--radius-sm); border:1px solid #bbf7d0; padding:.75rem; }
+    .stat-box .stat-num { font-family:'Playfair Display',serif; font-size:1.5rem; font-weight:700; color:var(--blue); display:block; }
+    .stat-box .stat-label { font-size:.75rem; color:var(--slate-light); font-weight:500; margin-top:.15rem; }
+
+    /* ── Error ── */
+    .error-box { background:#fff5f5; border:1.5px solid #fecaca; border-radius:var(--radius); padding:1.25rem 1.5rem; display:flex; gap:.75rem; align-items:flex-start; }
+    .error-box .error-icon { font-size:1.25rem; flex-shrink:0; }
+    .error-box h4 { font-size:.9rem; font-weight:700; color:var(--error); margin-bottom:.25rem; }
+    .error-box p  { font-size:.83rem; color:#991b1b; }
+
+    /* ── Import bar ── */
+    .import-row {
+      display: flex; gap: .75rem; align-items: center;
+    }
+
+    .btn-import {
+      padding: .65rem 1.5rem;
+      background: linear-gradient(135deg, var(--blue), #1d4ed8);
+      color: white; border: none;
+      border-radius: var(--radius-sm);
+      font-family: 'DM Sans', sans-serif;
+      font-size: .9rem; font-weight: 600;
+      cursor: pointer; transition: var(--transition);
+      white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(26,86,219,.3);
+      display: flex; align-items: center; gap: .5rem;
+    }
+
+    .btn-import:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(26,86,219,.4);
+    }
+
+    .btn-import:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
+    .import-status-success {
+      display: flex; align-items: center; gap: .6rem;
+      background: #f0fdf4; border: 1px solid #bbf7d0;
+      border-radius: var(--radius-sm);
+      padding: .65rem 1rem;
+      font-size: .85rem; color: var(--success); font-weight: 500;
+    }
+
+    .import-status-error {
+      display: flex; align-items: center; gap: .6rem;
+      background: #fff5f5; border: 1px solid #fecaca;
+      border-radius: var(--radius-sm);
+      padding: .65rem 1rem;
+      font-size: .85rem; color: var(--error); font-weight: 500;
+    }
+
+    .import-status-loading {
+      display: flex; align-items: center; gap: .75rem;
+      background: var(--blue-pale); border: 1px solid var(--blue-mid);
+      border-radius: var(--radius-sm);
+      padding: .65rem 1rem;
+      font-size: .85rem; color: var(--blue); font-weight: 500;
+    }
+
+    .import-spinner {
+      width: 16px; height: 16px;
+      border: 2px solid var(--blue-mid);
+      border-top-color: var(--blue);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      flex-shrink: 0;
+    }
+
+    /* ── Mobile — 600px and below ── */
+    @media (max-width:600px) {
+
+      /* Header — hide TYAI logo and badge to avoid cramping */
+      header { padding:0 1rem; height:56px; }
+      /*.tyai-logo, .logo-divider { display:none; }*/
+      .header-badge { display:none; }
+      .logo-text span:first-child { font-size:1.1rem; }
+      .logo-text span:last-child  { display:none; }
+
+      /* Hero — tighten padding */
+      .hero { padding:2.5rem 1.25rem 3rem; }
+
+      /* Main — reduce side padding */
+      main { padding:1.25rem .85rem 3rem; }
+
+      /* Cards — reduce padding */
+      .card { padding:1.25rem; }
+      .card-header { margin-bottom:1rem; padding-bottom:.75rem; }
+
+      /* Form grids — single column */
+      .form-grid { grid-template-columns:1fr; }
+
+      /* Drop zone — hide drag text, show tap-friendly version */
+      .drop-zone { padding:1.75rem 1rem; }
+      .drop-zone .drag-text { display:none; }
+      .drop-zone p strong { font-size:.9rem; }
+      .drop-zone span { font-size:.75rem; }
+      .drop-icon { font-size:2rem; margin-bottom:.5rem; }
+
+      /* Steps bar — smaller text */
+      .step-item { padding:.75rem .85rem; font-size:.75rem; gap:.35rem; }
+
+      /* Result tabs — horizontal scroll, no wrap */
+      .result-tabs {
+        flex-wrap:nowrap;
+        overflow-x:auto;
+        -webkit-overflow-scrolling:touch;
+        padding-bottom:.5rem;
+        gap:.4rem;
+        /* hide scrollbar visually */
+        scrollbar-width:none;
+        -ms-overflow-style:none;
+      }
+      .result-tabs::-webkit-scrollbar { display:none; }
+      .result-tab {
+        flex-shrink:0;
+        padding:.5rem .85rem;
+        font-size:.78rem;
+        white-space:nowrap;
+      }
+
+      /* STAR grid — single column */
+      .star-grid { grid-template-columns:1fr; gap:.6rem; }
+      .star-item  { padding:.65rem; }
+
+      /* Success stats — single column */
+      .success-stats { grid-template-columns:1fr; gap:.6rem; }
+
+      /* Relevance bar — stack on very small screens */
+      .relevance-bar { flex-wrap:wrap; gap:.5rem; }
+      .relevance-track { width:100%; order:3; }
+
+      /* Cover letter copy button — move below, not absolute */
+      .result-box { padding:1.25rem; }
+      .copy-btn {
+        position:static;
+        margin-bottom:.75rem;
+        align-self:flex-start;
+        display:flex;
+      }
+      .result-box { display:flex; flex-direction:column; }
+      .result-box pre { font-size:.83rem; }
+
+      /* Question cards — tighter */
+      .question-header { padding:.85rem 1rem; }
+      .question-body   { padding:0 1rem 1rem; }
+      .question-text   { font-size:.85rem; }
+      .q-type-badge    { font-size:.65rem; padding:.15rem .5rem; }
+
+      /* Success banner */
+      .success-banner { padding:1.5rem 1rem; }
+      .success-icon   { font-size:2.5rem; }
+
+      /* Loading steps */
+      .loading-steps { max-width:100%; }
+      .loading-step  { font-size:.8rem; }
+
+      /* Results header — stack */
+      .results-header { flex-direction:column; align-items:flex-start; gap:.75rem; }
+      .btn-secondary  { width:100%; justify-content:center; }
+
+      /* Import bar — stack on mobile */
+      .import-row { flex-direction:column; align-items:stretch; }
+      .btn-import  { width:100%; justify-content:center; }
+
+      /* Submit button */
+      .btn-primary { font-size:.95rem; padding:.85rem 1.5rem; }
+    }
+
+    /* ── Extra small — 380px and below ── */
+    @media (max-width:380px) {
+      .logo-mark { width:30px; height:30px; font-size:.9rem; }
+      .logo-text span:first-child { font-size:1rem; }
+      .step-item { padding:.65rem .6rem; font-size:.7rem; }
+      .hero h1   { font-size:1.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <img src="head_logo.png" alt="TYAI Logo" class="logo-mark">
+    <div class="logo-text">
+      <span>Adeed</span>
+      <span>AI Job Tailoring Assistant</span>
+    </div>
+    <div class="logo-divider"></div>
+        <img src="TYAI_Logo_Main.svg" alt="TYAI Logo" class="tyai-logo" />
+
+  </div>
+  <!--<div class="header-badge">Powered by AWS Bedrock</div> -->
+</header>
+
+<div class="hero">
+  <div class="hero-content">
+    <h1>Your <em>intelligent</em> job application assistant</h1>
+    <p>Paste a job description, upload your resume — Adeed tailors everything in seconds.</p>
+  </div>
+</div>
+
+<div class="steps-bar">
+  <div class="step-item active" id="step-1"><div class="step-num">1</div> Fill in Details</div>
+  <div class="step-item"        id="step-2"><div class="step-num">2</div> AI Processing</div>
+  <div class="step-item"        id="step-3"><div class="step-num">3</div> View Results</div>
+</div>
+
+<main>
+
+  <!-- FORM -->
+  <div id="form-section">
+
+    <!-- LinkedIn Import -->
+    <div class="card" id="import-card">
+      <div class="card-header">
+        <div class="card-icon"><img src="linkedin.svg" alt="LinkedIn" class="linkedin-logo"/></div>
+        <div>
+          <div class="card-title">Import from LinkedIn</div>
+          <div class="card-subtitle">Paste a job URL to auto-fill the form</div>
+          <div class="card-subtitle">It takes around 30 - 40 seconds</div>
+
+        </div>
+      </div>
+
+      <div class="import-row">
+        <input type="text" id="linkedin_url"
+          placeholder="https://www.linkedin.com/jobs/view/..."
+          style="flex:1" />
+        <button class="btn-import" id="import-btn" onclick="importFromLinkedIn()">
+          <span id="import-btn-text">Import</span>
+        </button>
+      </div>
+
+      <div id="import-status" style="margin-top:.75rem;display:none"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">💼</div>
+        <div>
+          <div class="card-title">Job Details</div>
+          <div class="card-subtitle">Tell Adeed about the role you're applying for</div>
+        </div>
+        <button id="example-btn" class="btn-example" onclick="fillExampleJob()">
+        💡 Try an example
+        </button>
+      </div>
+      <div class="form-grid" style="margin-bottom:1rem">
+        <div class="field">
+          <label>Job Title <span class="req">*</span></label>
+          <input type="text" id="job_title" placeholder="e.g. Cloud Solutions Architect" />
+        </div>
+        <div class="field">
+          <label>Company Name <span class="req">*</span></label>
+          <input type="text" id="company_name" placeholder="e.g. Tech Innovations Inc." />
+        </div>
+      </div>
+      <div class="field">
+        <label>Job Description <span class="req">*</span></label>
+        <textarea id="job_description" placeholder="Paste the full job description here..."></textarea>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">👤</div>
+        <div>
+          <div class="card-title">Your Name</div>
+          <div class="card-subtitle">Used to personalize your cover letter</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Full Name <span class="req">*</span></label>
+        <input type="text" id="candidate_name" placeholder="e.g. Ahmed Falah Alqahtani" />
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">📄</div>
+        <div>
+          <div class="card-title">Your Resume</div>
+          <div class="card-subtitle">Upload a PDF or paste your resume text directly</div>
+        </div>
+      </div>
+
+      <div class="resume-toggle">
+        <button class="toggle-btn active" id="toggle-upload" onclick="switchResumeMode('upload')">📎 Upload PDF</button>
+        <button class="toggle-btn"        id="toggle-paste"  onclick="switchResumeMode('paste')">✏️ Paste Text</button>
+      </div>
+
+      <div id="mode-upload">
+        <div class="drop-zone" id="drop-zone"
+             ondragover="handleDragOver(event)"
+             ondragleave="handleDragLeave()"
+             ondrop="handleDrop(event)">
+          <input type="file" id="pdf-input" accept=".pdf" onchange="handleFileSelect(event)" />
+          <span class="drop-icon">📂</span>
+          <p><strong class="drag-text">Drop your PDF here or </strong><strong>tap to browse</strong></p>
+          <span>Supports PDF files up to 10MB</span>
+        </div>
+        <div class="file-chosen" id="file-chosen" style="display:none">
+          <span class="file-icon">📄</span>
+          <span class="file-name" id="file-name-display"></span>
+          <span class="file-size" id="file-size-display"></span>
+          <button class="remove-file" onclick="removeFile()">✕</button>
+        </div>
+        <div id="pdf-extract-status" style="margin-top:.5rem;font-size:.8rem;color:var(--slate-light)">PDF will be securely uploaded and parsed by AI on submission</div>
+      </div>
+
+      <div id="mode-paste" style="display:none">
+        <textarea id="resume_text_input" style="min-height:220px" placeholder="Paste your full resume text here..."></textarea>
+      </div>
+    </div>
+
+    <button class="btn-primary" onclick="submitForm()">✨ Generate with Adeed</button>
+    <div id="form-error" style="margin-top:1rem;display:none"></div>
+  </div>
+
+  <!-- LOADING -->
+  <div id="loading-section" class="card">
+    <div class="spinner-ring"></div>
+    <h3 style="font-family:'Playfair Display',serif;font-size:1.25rem;color:var(--navy);margin-bottom:.5rem">Adeed is working on it…</h3>
+    <p style="font-size:.88rem;color:var(--slate-light)">This usually takes 20–40 seconds</p>
+    <div class="loading-steps">
+      <div class="loading-step active" id="ls-1"><div class="step-dot"></div> Parsing resume</div>
+      <div class="loading-step"        id="ls-2"><div class="step-dot"></div> Analyzing job requirements</div>
+      <div class="loading-step"        id="ls-3"><div class="step-dot"></div> Tailoring resume bullets</div>
+      <div class="loading-step"        id="ls-4"><div class="step-dot"></div> Writing cover letter</div>
+      <div class="loading-step"        id="ls-5"><div class="step-dot"></div> Preparing interview questions</div>
+      <div class="loading-step"        id="ls-6"><div class="step-dot"></div> Saving your application</div>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="results-section">
+    <div class="results-header">
+      <div>
+        <div class="results-title">Your Application Package</div>
+        <div class="results-meta" id="results-meta"></div>
+      </div>
+      <button class="btn-secondary" onclick="resetForm()">← New Application</button>
+    </div>
+
+    <div class="result-tabs">
+      <button class="result-tab active" onclick="switchTab('analysis')">📊 Job Analysis</button>
+      <button class="result-tab"        onclick="switchTab('resume')">📄 Tailored Resume</button>
+      <button class="result-tab"        onclick="switchTab('coverletter')">✉️ Cover Letter</button>
+      <button class="result-tab"        onclick="switchTab('interview')">🎤 Interview Prep</button>
+      <button class="result-tab"        onclick="switchTab('saved')">✅ Done</button>
+    </div>
+
+    <div class="tab-panel active" id="panel-analysis"></div>
+    <div class="tab-panel"        id="panel-resume"></div>
+    <div class="tab-panel"        id="panel-coverletter"></div>
+    <div class="tab-panel"        id="panel-interview"></div>
+    <div class="tab-panel"        id="panel-saved"></div>
+  </div>
+
+</main>
+
+<script>
+  // ─────────────────────────────────────────────────────────────────
+  // CONFIG — replace with an actual API Gateway URL
+  // ─────────────────────────────────────────────────────────────────
+  const API_ENDPOINT    = '';
+  const UPLOAD_ENDPOINT = '';
+  const SCRAPE_ENDPOINT = '';
+
+  // ── State ─────────────────────────────────────────────────────────
+  let resumeMode    = 'upload';
+  let extractedText = '';
+  let selectedFile  = null;
+
+  // ── LinkedIn import ──────────────────────────────────────────────
+  async function importFromLinkedIn() {
+    const url = document.getElementById('linkedin_url').value.trim();
+
+    if (!url) {
+      showImportStatus('error', 'Please paste a LinkedIn job URL first');
+      return;
+    }
+
+    if (!url.includes('linkedin.com')) {
+      showImportStatus('error', 'Only LinkedIn job URLs are supported');
+      return;
+    }
+
+    const btn = document.getElementById('import-btn');
+    btn.disabled = true;
+    document.getElementById('import-btn-text').textContent = 'Importing...';
+    showImportStatus('loading', 'Starting LinkedIn import...');
+
+    try {
+      // Step 1 — Start scraping (returns job_id instantly)
+      const startResp = await fetch(SCRAPE_ENDPOINT, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ url })
+      });
+
+      const startRaw  = await startResp.json();
+      const startData = typeof startRaw.body === 'string'
+        ? JSON.parse(startRaw.body) : startRaw;
+
+      if (!startData.job_id) throw new Error(startData.error || 'Failed to start import');
+
+      const job_id = startData.job_id;
+      console.log('Scrape job started:', job_id);
+
+      // Step 2 — Poll for result every 3 seconds
+      let elapsed = 0;
+      const result = await pollForResult(job_id, (secs) => {
+        elapsed = secs;
+        showImportStatus('loading',
+          `Fetching job details from LinkedIn — ${secs}s elapsed...`
+        );
+      });
+
+      // Step 3 — Auto-fill form
+      if (result.title)       document.getElementById('job_title').value       = result.title;
+      if (result.company)     document.getElementById('company_name').value    = result.company;
+      if (result.description) document.getElementById('job_description').value = result.description;
+
+      showImportStatus('success',
+        `Imported in ${elapsed}s — ${result.title || ''} at ${result.company || ''}`
+      );
+
+      document.getElementById('job_title').scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    } catch (e) {
+      showImportStatus('error',
+        e.message || 'Could not read this page — please paste the description manually'
+      );
+    } finally {
+      btn.disabled = false;
+      document.getElementById('import-btn-text').textContent = 'Import';
+    }
+  }
+
+  async function pollForResult(job_id, onTick) {
+    const POLL_INTERVAL = 3000;  // 3 seconds
+    const MAX_WAIT      = 90000; // 90 seconds max
+    const FETCH_URL     = SCRAPE_ENDPOINT.replace('/scrape-job', '/scrape-job') + '?job_id=' + job_id;
+
+    let elapsed = 0;
+
+    return new Promise((resolve, reject) => {
+      const interval = setInterval(async () => {
+        elapsed += 3;
+        onTick(elapsed);
+
+        if (elapsed > MAX_WAIT / 1000) {
+          clearInterval(interval);
+          reject(new Error('Import timed out — please try again'));
+          return;
+        }
+
+        try {
+          const resp = await fetch(
+            `${SCRAPE_ENDPOINT}?job_id=${job_id}`,
+            { method: 'GET' }
+          );
+
+          const raw  = await resp.json();
+          const data = typeof raw.body === 'string' ? JSON.parse(raw.body) : raw;
+
+          console.log('Poll result:', data.status);
+
+          if (data.status === 'done') {
+            clearInterval(interval);
+            if (!data.data?.description) {
+              reject(new Error("Couldn't extract job description — paste manually"));
+            } else {
+              resolve(data.data);
+            }
+          } else if (data.status === 'error') {
+            clearInterval(interval);
+            reject(new Error(data.error || 'Scraping failed'));
+          }
+          // status pending/processing → keep polling
+
+        } catch (pollErr) {
+          console.error('Poll error:', pollErr);
+          // Don't stop polling on network blip — keep trying
+        }
+      }, POLL_INTERVAL);
+    });
+  }
+
+  function showImportStatus(type, message) {
+    const box = document.getElementById('import-status');
+    box.style.display = 'block';
+
+    if (type === 'loading') {
+      box.innerHTML = `
+        <div class="import-status-loading">
+          <div class="import-spinner"></div>
+          <span id="import-status-msg">${message}</span>
+        </div>`;
+    } else if (type === 'success') {
+      box.innerHTML = `
+        <div class="import-status-success">
+          ✅ ${message}
+        </div>`;
+    } else {
+      box.innerHTML = `
+        <div class="import-status-error">
+          ⚠️ ${message}
+        </div>`;
+    }
+  }
+
+  // Allow pressing Enter in URL field to trigger import
+  document.addEventListener('DOMContentLoaded', () => {
+    const urlInput = document.getElementById('linkedin_url');
+    if (urlInput) {
+      urlInput.addEventListener('keydown', e => {
+        if (e.key === 'Enter') importFromLinkedIn();
+      });
+    }
+  });
+
+  // ── Example job ───────────────────────────────────────────────────
+const EXAMPLE_JOB = {
+  title:   'Cloud Solutions Architect',
+  company: 'Saudi Aramco Digital',
+  description: `We are seeking an experienced Cloud Solutions Architect to join our Digital Transformation team. You will be responsible for designing and implementing enterprise-grade cloud solutions on AWS, driving our serverless-first strategy across business units.
+
+Key Responsibilities:
+- Design and implement scalable serverless architectures using AWS Lambda, API Gateway, Step Functions, and DynamoDB
+- Lead cloud migration initiatives from on-premises infrastructure to AWS
+- Build and maintain CI/CD pipelines using AWS CodePipeline, CodeBuild, and CloudFormation
+- Collaborate with development teams to optimize cloud costs and improve performance
+- Implement security best practices using IAM, VPC, AWS WAF, and AWS Shield
+- Design event-driven architectures using Amazon EventBridge, SNS, and SQS
+- Mentor junior engineers and conduct architecture reviews
+
+Requirements:
+- 5+ years of hands-on AWS experience in production environments
+- AWS Certified Solutions Architect Professional certification preferred
+- Strong Python and infrastructure automation skills using Boto3 and AWS CDK
+- Deep experience with serverless technologies: Lambda, API Gateway, DynamoDB, S3
+- Experience with containerization: Docker, Amazon ECS, and Amazon EKS
+- Proficiency in CI/CD practices and DevOps culture
+- Experience with monitoring: CloudWatch, AWS X-Ray, and Datadog
+- Strong understanding of cloud security, networking, and compliance
+- Bachelor degree in Computer Science, Engineering, or related field
+- Excellent communication skills in English; Arabic is a plus
+
+Tech Stack: AWS Lambda, API Gateway, Step Functions, DynamoDB, S3, CloudFront, Route 53, IAM, VPC, CloudFormation, CDK, Terraform, Python, Docker, ECS, EKS, CodePipeline, CloudWatch, Bedrock`
+};
+
+function fillExampleJob() {
+  document.getElementById('job_title').value       = EXAMPLE_JOB.title;
+  document.getElementById('company_name').value    = EXAMPLE_JOB.company;
+  document.getElementById('job_description').value = EXAMPLE_JOB.description;
+
+  // Visual feedback on button
+  const btn = document.getElementById('example-btn');
+  btn.textContent = '✅ Example loaded';
+  btn.style.color       = 'var(--success)';
+  btn.style.borderColor = '#bbf7d0';
+  setTimeout(() => {
+    btn.textContent       = '💡 Try an example';
+    btn.style.color       = '';
+    btn.style.borderColor = '';
+  }, 2000);
+
+  // Scroll to description so user sees it filled
+  document.getElementById('job_description')
+    .scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+  // ── Resume mode ───────────────────────────────────────────────────
+  function switchResumeMode(mode) {
+    resumeMode = mode;
+    document.getElementById('mode-upload').style.display = mode === 'upload' ? 'block' : 'none';
+    document.getElementById('mode-paste').style.display  = mode === 'paste'  ? 'block' : 'none';
+    document.getElementById('toggle-upload').classList.toggle('active', mode === 'upload');
+    document.getElementById('toggle-paste').classList.toggle('active',  mode === 'paste');
+  }
+
+  // ── Drag & drop ───────────────────────────────────────────────────
+  function handleDragOver(e) { e.preventDefault(); document.getElementById('drop-zone').classList.add('drag-over'); }
+  function handleDragLeave()  { document.getElementById('drop-zone').classList.remove('drag-over'); }
+  function handleDrop(e) {
+    e.preventDefault();
+    document.getElementById('drop-zone').classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type === 'application/pdf') processFile(file);
+  }
+  function handleFileSelect(e) { const file = e.target.files[0]; if (file) processFile(file); }
+
+  function processFile(file) {
+    selectedFile = file;
+    s3Location   = null; // reset any previous upload
+    document.getElementById('file-name-display').textContent = file.name;
+    document.getElementById('file-size-display').textContent = (file.size/1024/1024).toFixed(2) + ' MB';
+    document.getElementById('file-chosen').style.display = 'flex';
+    document.getElementById('pdf-extract-status').textContent = '⏳ Ready to upload — will be processed by AI parser';
+  }
+
+  function removeFile() {
+    selectedFile = null;
+    s3Location   = null;
+    document.getElementById('file-chosen').style.display = 'none';
+    document.getElementById('pdf-extract-status').textContent = '';
+    document.getElementById('pdf-input').value = '';
+  }
+
+ async function uploadPDFToS3(file) {
+    document.getElementById('pdf-extract-status').textContent = '⏳ Uploading PDF to secure storage…';
+
+    // Step 1 — get presigned URL
+    const urlResp = await fetch(UPLOAD_ENDPOINT, { method: 'POST' });
+    const rawData = await urlResp.json();
+
+    // Unwrap Lambda proxy response body
+    const urlData = typeof rawData.body === 'string'
+      ? JSON.parse(rawData.body)
+      : rawData;
+
+    console.log('Presigned URL response:', urlData);
+
+    if (!urlData.upload_url) throw new Error('Could not get upload URL');
+
+    const { upload_url, s3_bucket, s3_key } = urlData;
+
+    // Step 2 — upload PDF directly to S3
+    const uploadResp = await fetch(upload_url, {
+      method:  'PUT',
+      body:    file,
+      headers: { 'Content-Type': 'application/pdf' }
+    });
+
+    if (!uploadResp.ok) throw new Error(`S3 upload failed: ${uploadResp.status}`);
+
+    document.getElementById('pdf-extract-status').textContent = '✅ PDF uploaded — AI will extract text';
+
+    return { s3_bucket, s3_key };
+}
+
+  // ── Validation ────────────────────────────────────────────────────
+  function validate() {
+    const fields = { job_title:'Job Title', company_name:'Company Name', job_description:'Job Description', candidate_name:'Full Name' };
+    for (const [id, label] of Object.entries(fields)) {
+      if (!document.getElementById(id).value.trim()) return `Please fill in: ${label}`;
+    }
+          // Job description quality check
+      const jd = document.getElementById('job_description').value.trim();
+      if (jd.length < 200) {
+        return "Job description is too short — paste the full job posting for best results. Need help? Click 'Try an example' above.";
+      }
+
+      const wordCount = jd.split(' ').filter(w => w.length > 2).length;
+      if (wordCount < 30) {
+        return 'Job description does not look like a real job posting — please paste the complete description.';
+      }
+    if (resumeMode === 'upload' && !selectedFile)
+      return 'Please upload a PDF resume (or switch to paste mode)';
+    if (resumeMode === 'paste' && !document.getElementById('resume_text_input').value.trim())
+      return 'Please paste your resume text';
+    return null;
+  }
+
+  function sanitizeText(text) {
+    if (!text) return '';
+    return text
+        .replace(/[\r\n]+/g, ' ')         // newlines → spaces
+        .replace(/\t/g, ' ')              // tabs → spaces
+        .replace(/\\/g, ' ')              // backslashes → spaces
+        .replace(/'/g, ' ')              // apostrophes → spaces  
+        .replace(/[\u0000-\u001F]/g, ' ') // control chars → spaces
+        .replace(/  +/g, ' ')             // collapse spaces
+        .trim();
+}
+
+  // ── Loading ───────────────────────────────────────────────────────
+  let loadingInterval;
+
+  function startLoadingAnimation() {
+    let current = 0;
+    function tick() {
+      [1,2,3,4,5,6].forEach((s,i) => {
+        const el = document.getElementById(`ls-${s}`);
+        if      (i < current)  el.className = 'loading-step done';
+        else if (i === current) el.className = 'loading-step active';
+        else                    el.className = 'loading-step';
+      });
+      if (current < 5) current++;
+    }
+    tick();
+    loadingInterval = setInterval(tick, 5000);
+  }
+
+  function stopLoadingAnimation() {
+    clearInterval(loadingInterval);
+    [1,2,3,4,5,6].forEach(s => document.getElementById(`ls-${s}`).className = 'loading-step done');
+  }
+
+  function setStep(n) {
+    [1,2,3].forEach(i => {
+      const el = document.getElementById(`step-${i}`);
+      el.classList.remove('active','done');
+      if      (i < n)  el.classList.add('done');
+      else if (i === n) el.classList.add('active');
+    });
+  }
+
+  // ── Submit ────────────────────────────────────────────────────────
+  async function submitForm() {
+    const err = validate();
+    if (err) { showFormError(err); return; }
+    hideFormError();
+
+    // Show loading immediately
+    document.getElementById('form-section').style.display    = 'none';
+    document.getElementById('loading-section').style.display = 'block';
+    setStep(2);
+    startLoadingAnimation();
+
+    // If PDF mode — upload to S3 first, then build payload
+    let resume_text = '';
+    let s3_bucket   = '';
+    let s3_key      = '';
+
+    if (resumeMode === 'upload') {
+      try {
+        const loc = await uploadPDFToS3(selectedFile);
+        s3_bucket = loc.s3_bucket;
+        s3_key    = loc.s3_key;
+      } catch (uploadErr) {
+        stopLoadingAnimation();
+        document.getElementById('loading-section').style.display = 'none';
+        document.getElementById('form-section').style.display    = 'block';
+        setStep(1);
+        showFormError('Upload failed: ' + uploadErr.message);
+        return;
+      }
+    } else {
+      resume_text = document.getElementById('resume_text_input').value.trim();
+    }
+
+    const payload = {
+      resume_text : sanitizeText(resume_text),
+      s3_bucket,
+      s3_key,
+      job_title:       sanitizeText(document.getElementById('job_title').value),
+      company_name:    sanitizeText(document.getElementById('company_name').value),
+      job_description: sanitizeText(document.getElementById('job_description').value),
+      candidate_name:  sanitizeText(document.getElementById('candidate_name').value),
+      user_id:         'anonymous',
+    };
+    //const bodyStr = JSON.stringify(payload);
+    //console.log('Raw body string:', bodyStr);
+    //console.log('Body length:', bodyStr.length);
+
+    try {
+      const response = await fetch(API_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      
+      const rawText = await response.text();
+      //console.log('PRETTY PAYLOAD:', JSON.stringify(payload, null, 2));
+      console.log('RAW RESPONSE:', rawText);
+
+      let data;
+      try   { data = JSON.parse(rawText); }
+      catch { throw new Error('Server returned invalid JSON. Check console for details.'); }
+
+      if (typeof data === 'string') data = JSON.parse(data);
+      if (!data.results) throw new Error(data.error || data.cause || 'Unexpected response structure');
+
+      stopLoadingAnimation();
+      document.getElementById('loading-section').style.display  = 'none';
+      document.getElementById('results-section').style.display  = 'block';
+      setStep(3);
+      renderResults(data);
+
+    } catch (e) {
+      stopLoadingAnimation();
+      document.getElementById('loading-section').style.display = 'none';
+      document.getElementById('form-section').style.display    = 'block';
+      setStep(1);
+      showFormError('API Error: ' + e.message);
+    }
+  }
+
+  // ── Render ────────────────────────────────────────────────────────
+  function renderResults(data) {
+    const { results, job_title, company_name } = data;
+    document.getElementById('results-meta').innerHTML =
+      `<strong>${job_title}</strong> at <strong>${company_name}</strong>`;
+    renderAnalysis(results.job_analysis);
+    renderResume(results.tailored_resume);
+    renderCoverLetter(results.cover_letter);
+    renderInterview(results.interview_prep);
+    renderSaved(results, job_title, company_name);
+  }
+
+  function renderAnalysis(analysis) {
+    const panel = document.getElementById('panel-analysis');
+    if (!analysis) { panel.innerHTML = '<div class="result-box"><pre>No analysis data.</pre></div>'; return; }
+    const tags = (arr, cls) => (arr||[]).map(t=>`<span class="tag ${cls}">${t}</span>`).join('');
+    panel.innerHTML = `
+      <div class="analysis-grid">
+        <div class="analysis-card"><h4>Role Level</h4><span class="role-badge">${analysis.role_level||'N/A'}</span></div>
+        <div class="analysis-card"><h4>Required Skills</h4><div class="tag-list">${tags(analysis.required_skills,'tag-blue')}</div></div>
+        <div class="analysis-card"><h4>Preferred Skills</h4><div class="tag-list">${tags(analysis.preferred_skills,'tag-slate')}</div></div>
+        <div class="analysis-card"><h4>Technical Tools</h4><div class="tag-list">${tags(analysis.technical_tools,'tag-blue')}</div></div>
+        <div class="analysis-card"><h4>Soft Skills</h4><div class="tag-list">${tags(analysis.soft_skills,'tag-slate')}</div></div>
+        <div class="analysis-card"><h4>Education</h4><div class="tag-list">${tags(analysis.education_requirements,'tag-green')}</div></div>
+        <div class="analysis-card" style="grid-column:1/-1"><h4>Key Responsibilities</h4><div class="tag-list">${tags(analysis.key_responsibilities,'tag-slate')}</div></div>
+      </div>`;
+  }
+
+  function renderResume(tailored) {
+    const panel = document.getElementById('panel-resume');
+    if (!tailored?.tailored_experience) { panel.innerHTML = '<div class="result-box"><pre>No resume data.</pre></div>'; return; }
+    const score = tailored.relevance_score || 0;
+    const exps  = tailored.tailored_experience.map(exp => `
+      <div class="exp-block">
+        <h4>${exp.title||''} — ${exp.company||''}</h4>
+        <div class="exp-meta">${exp.dates||''}</div>
+        <ul>${(exp.bullets||[]).map(b=>`<li>${b}</li>`).join('')}</ul>
+      </div>`).join('');
+    const kws = (tailored.keywords_added||[]).map(k=>`<span class="tag tag-blue">${k}</span>`).join('');
+    panel.innerHTML = `
+      <div class="relevance-bar">
+        <span class="relevance-label">ATS Relevance Score</span>
+        <div class="relevance-track"><div class="relevance-fill" style="width:${score}%"></div></div>
+        <span class="relevance-score">${score}%</span>
+      </div>
+      ${exps}
+      ${kws ? `<div class="analysis-card" style="margin-top:1rem"><h4>Keywords Added</h4><div class="tag-list">${kws}</div></div>` : ''}`;
+  }
+
+  function renderCoverLetter(letter) {
+    const panel = document.getElementById('panel-coverletter');
+    if (!letter?.cover_letter) { panel.innerHTML = '<div class="result-box"><pre>No cover letter data.</pre></div>'; return; }
+    const text = letter.cover_letter;
+    const pts  = (letter.key_points_covered||[]).map(p=>`<span class="tag tag-green">${p}</span>`).join('');
+    panel.innerHTML = `
+      <div class="result-box">
+        <button class="copy-btn" onclick="copyText(this, \`${text.replace(/`/g,'\\`').replace(/\$/g,'\\$')}\`)">📋 Copy</button>
+        <pre>${text}</pre>
+      </div>
+      ${pts ? `<div class="analysis-card" style="margin-top:1rem"><h4>Key Points Covered</h4><div class="tag-list">${pts}</div></div>` : ''}`;
+  }
+
+  function renderInterview(prep) {
+    const panel = document.getElementById('panel-interview');
+    if (!prep?.questions) { panel.innerHTML = '<div class="result-box"><pre>No interview data.</pre></div>'; return; }
+    panel.innerHTML = prep.questions.map((q,i) => {
+      const fw      = q.answer_framework || {};
+      const actions = Array.isArray(fw.action) ? fw.action.join('; ') : (fw.action||'');
+      const typeKey = (q.type||'behavioral').replace(/[^a-z_]/g,'');
+      const pts     = (q.key_points_to_mention||[]).map(p=>`<span class="tag tag-slate">${p}</span>`).join('');
+      return `
+        <div class="question-card">
+          <div class="question-header" onclick="toggleQuestion(this)">
+            <div class="question-text">${i+1}. ${q.question}</div>
+            <span class="q-type-badge q-${typeKey}">${q.type||'behavioral'}</span>
+            <span class="chevron">▾</span>
+          </div>
+          <div class="question-body">
+            <div class="star-grid">
+              <div class="star-item"><div class="star-label">⭐ Situation</div><div class="star-content">${fw.situation||'—'}</div></div>
+              <div class="star-item"><div class="star-label">🎯 Task</div><div class="star-content">${fw.task||'—'}</div></div>
+              <div class="star-item"><div class="star-label">🔧 Action</div><div class="star-content">${actions||'—'}</div></div>
+              <div class="star-item"><div class="star-label">📈 Result</div><div class="star-content">${fw.result||'—'}</div></div>
+            </div>
+            ${pts ? `<div style="margin-top:.75rem"><div style="font-size:.75rem;font-weight:700;color:var(--slate-light);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem">Key Points</div><div class="tag-list">${pts}</div></div>` : ''}
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function renderSaved(results, job_title, company_name) {
+    const panel      = document.getElementById('panel-saved');
+    const skillCount = (results.job_analysis?.required_skills||[]).length;
+    const bulletCount= (results.tailored_resume?.tailored_experience||[]).reduce((a,e)=>a+(e.bullets||[]).length,0);
+    const qCount     = (results.interview_prep?.questions||[]).length;
+    panel.innerHTML  = `
+      <div class="success-banner">
+        <span class="success-icon">🎉</span>
+        <h3>Your application package is ready!</h3>
+        <p>
+          Adeed has tailored your resume, written a personalized cover letter,
+          and prepared <strong>${qCount} interview questions</strong>
+          for <strong>${job_title}</strong> at <strong>${company_name}</strong>.
+        </p>
+        <div class="success-stats">
+          <div class="stat-box"><span class="stat-num">${skillCount}</span><div class="stat-label">Skills matched</div></div>
+          <div class="stat-box"><span class="stat-num">${bulletCount}</span><div class="stat-label">Resume bullets tailored</div></div>
+          <div class="stat-box"><span class="stat-num">${qCount}</span><div class="stat-label">Interview questions</div></div>
+        </div>
+      </div>`;
+  }
+
+  // ── Helpers ───────────────────────────────────────────────────────
+  function switchTab(name) {
+    const tabs = ['analysis','resume','coverletter','interview','saved'];
+    document.querySelectorAll('.result-tab').forEach((btn,i) => btn.classList.toggle('active', tabs[i]===name));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById(`panel-${name}`).classList.add('active');
+  }
+
+  function toggleQuestion(header) {
+    header.classList.toggle('open');
+    header.nextElementSibling.classList.toggle('open');
+  }
+
+  function copyText(btn, text) {
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = '✅ Copied!'; btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = '📋 Copy'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+
+  function showFormError(msg) {
+    const box = document.getElementById('form-error');
+    box.style.display = 'block';
+    box.innerHTML = `<div class="error-box"><span class="error-icon">⚠️</span><div><h4>Could not submit</h4><p>${msg}</p></div></div>`;
+    box.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  }
+
+  function hideFormError() { document.getElementById('form-error').style.display = 'none'; }
+
+  function resetForm() {
+    document.getElementById('results-section').style.display = 'none';
+    document.getElementById('form-section').style.display    = 'block';
+    setStep(1);
+    removeFile();
+  }
+</script>
+</body>
+</html>
