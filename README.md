@@ -8,7 +8,7 @@ A serverless, agent-based job application assistant built on AWS. The system ana
 
 ## Overview
 
-Adeed (عديد — Arabic for assistant) automates the most time-consuming parts of job application preparation. The user provides a job description and resume; the system returns a complete application package within 30–45 seconds.
+Adeed (عضيد — Arabic for assistant) automates the most time-consuming parts of job application preparation. The user provides a job description and resume; the system returns a complete application package within 30–45 seconds.
 
 The project demonstrates end-to-end AI system design using AWS-native services: multi-agent orchestration, cost-optimized model selection, serverless infrastructure, and a production frontend deployed on CloudFront.
 
