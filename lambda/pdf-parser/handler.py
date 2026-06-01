@@ -11,18 +11,24 @@ sys.path.append(str(Path(__file__).parent.parent.parent / "shared"))
 from bedrock_client import BedrockClient
 import config
 
+logger = logging.getLogger()
+logger.setLevel(config.LOG_LEVEL)
+
 try:
     import PyPDF2
-except ImportError:
+    logger.info("PyPDF2 imported successfully")
+except ImportError as e:
+    logger.error(f"PyPDF2 import failed: {str(e)}")
     PyPDF2 = None
 
 try:
     import pdfplumber
-except ImportError:
+    logger.info("pdfplumber imported successfully")
+except ImportError as e:
+    logger.error(f"pdfplumber import failed: {str(e)}")
     pdfplumber = None
 
-logger = logging.getLogger()
-logger.setLevel(config.LOG_LEVEL)
+
 
 s3_client = boto3.client('s3')
 
